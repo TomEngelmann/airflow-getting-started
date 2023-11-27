@@ -67,7 +67,7 @@ def insert_data_to_postgres(**kwargs):
 
 with DAG(
     default_args = default_args,
-    dag_id = 'dag_weather_api_v1',
+    dag_id = 'dag_weather_api_v2',
     description = 'Dag for calling weather api',
     start_date = datetime(2023, 11, 27),
     schedule_interval = '@daily'
