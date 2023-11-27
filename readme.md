@@ -1,6 +1,6 @@
 # Repository to test out apache airflow
 ---
-## Prerequisits
+## Prerequisites
 - Make sure docker is installed
 ## Setup
 ```
