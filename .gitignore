@@ -8,3 +8,6 @@ logs
 
 # Ignore Cache
 dags/__pycache__/*
+
+dags/tasks/__pycache__/*
+dags/tasks/weather/__pycache__/*
