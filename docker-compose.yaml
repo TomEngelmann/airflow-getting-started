@@ -234,5 +234,15 @@ services:
       - -c
       - airflow
 
+  flask-server:
+    <<: *airflow-common
+    command: "python /opt/airflow/dags/tasks/nfl/rest_route.py"
+    ports:
+      - "8000:8000"
+    depends_on:
+      - airflow-webserver
+    volumes:
+      - ./dags/tasks/nfl:/opt/airflow/dags/tasks/nfl
+
 volumes:
   postgres-db-volume:

@@ -1,4 +1,5 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
+
 import joblib
 import pandas as pd
 
@@ -6,19 +7,30 @@ app = Flask(__name__)
 
 @app.route('/predict', methods=['POST'])
 def predict():
-    loaded_model = joblib.load('/opt/airflow/dags/tasks/nfl/linear_regression_model.pkl')
+    try:
+        # Lese die Daten aus dem JSON-Format im Request-Body
+        input_data = request.json
 
-    # Annahme: Du hast neue Daten, auf die du Vorhersagen machen möchtest
-    new_data = pd.DataFrame({
-        'Yards': [56, 100, 23],
-        'Week': [1, 2, 3],
-        'Year': [2023, 2023, 2023]
-    })
+        # Überprüfe, ob die erforderlichen Schlüssel im Input vorhanden sind
+        required_keys = ['Yards', 'Week', 'Year']
+        if not all(key in input_data for key in required_keys):
+            return jsonify({'error': 'Missing required keys in input data'}), 400
 
-    # Mache Vorhersagen auf den neuen Daten
-    predictions = loaded_model.predict(new_data)
+        # Konvertiere die Daten in ein DataFrame
+        new_data = pd.DataFrame({
+            'Yards': [input_data['Yards']],
+            'Week': [input_data['Week']],
+            'Year': [input_data['Year']]
+        })
 
-    return jsonify({'prediction': predictions})
+        # Lade das Modell und mache Vorhersagen auf den neuen Daten
+        loaded_model = joblib.load('/opt/airflow/dags/tasks/nfl/linear_regression_model.pkl')
+        predictions = loaded_model.predict(new_data).tolist()
 
+        return jsonify({'prediction': predictions})
+    
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=8000)
